@@ -19,6 +19,7 @@ const pkcs11Enabled = false
 type FactoryOpts struct {
 	Default string  `json:"default" yaml:"Default"`
 	SW      *SwOpts `json:"SW,omitempty" yaml:"SW,omitempty"`
+	SM      *SMOpts `json:"SM,omitempty" yaml:"SM,omitempty"`
 }
 
 // InitFactories must be called before using factory interfaces
@@ -46,6 +47,9 @@ func initFactories(config *FactoryOpts) error {
 	if config.SW == nil {
 		config.SW = GetDefaultOpts().SW
 	}
+	if config.SM == nil {
+		config.SM = GetDefaultOpts().SM
+	}
 
 	// Software-Based BCCSP
 	if config.Default == "SW" && config.SW != nil {
@@ -57,6 +61,14 @@ func initFactories(config *FactoryOpts) error {
 		}
 	}
 
+	if config.Default == "SM" && config.SW != nil {
+		f := &SMFactory{}
+		var err error
+		defaultBCCSP, err = initBCCSP(f, config)
+		if err != nil {
+			return errors.Wrapf(err, "Failed initializing BCCSP")
+		}
+	}
 	if defaultBCCSP == nil {
 		return errors.Errorf("Could not find default `%s` BCCSP", config.Default)
 	}

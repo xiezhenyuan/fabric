@@ -32,3 +32,15 @@ func GetDefaultOpts() *FactoryOpts {
 func (o *FactoryOpts) FactoryName() string {
 	return o.Default
 }
+
+// GetDefaultOpts offers a default implementation for Opts
+// returns a new instance every time
+func GetDefaultSMOpts() *FactoryOpts {
+	return &FactoryOpts{
+		Default: "SW",
+		SM: &SMOpts{
+			Hash:     "SM3",
+			Security: 256,
+		},
+	}
+}
